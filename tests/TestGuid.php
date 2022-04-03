@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fheerdink\DataTypes\Tests;
 
 use Fheerdink\DataTypes\Guid;
