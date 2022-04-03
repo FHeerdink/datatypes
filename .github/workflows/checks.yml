@@ -37,6 +37,15 @@ jobs:
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-reqs
       - name: Run tests
         run: vendor/bin/phpstan analyse src tests --level max
+  unittests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-reqs
+      - name: Run tests
+        run: vendor/bin/phpunit tests/
   codeowner:
     needs: [ phpcs, phpstan ]
     name: Codeowner
