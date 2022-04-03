@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class TestGuid extends TestCase
 {
-    public function testValidInitialisation()
+    public function testValidInitialisation(): void
     {
         $guidString = 'd50db124-10d0-4318-8a10-75172cbd44f5';
         $guid = new Guid($guidString);
@@ -16,14 +16,14 @@ class TestGuid extends TestCase
         $this->assertEquals($guidString, $guid);
     }
 
-    public function testInvalidInitialisation()
+    public function testInvalidInitialisation(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
         (new Guid('test'));
     }
 
-    public function testGenerate()
+    public function testGenerate(): void
     {
         $this->assertInstanceOf(Guid::class, Guid::generate());
     }
