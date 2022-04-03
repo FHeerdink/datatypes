@@ -1,0 +1,51 @@
+name: Check
+on: pull_request
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+jobs:
+  composer:
+    name: Composer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup
+        run: |
+          git clone -n https://${{ github.actor }}:${{ github.token }}@github.com/${{ github.repository }}.git .
+          git checkout ${{ github.event.pull_request.head.sha }}
+      - name: Validate
+        run: composer validate
+      - name: Build
+        run: composer install --no-dev -o --ignore-platform-reqs --no-scripts
+  phpcs:
+    name: PHP Code Sniffer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup
+        run: |
+          git clone -n https://${{ github.actor }}:${{ github.token }}@github.com/${{ github.repository }}.git .
+          git checkout ${{ github.event.pull_request.head.sha }}          
+          composer install -o --ignore-platform-reqs --no-scripts
+          wget https://github.com/devorto/github-actions/releases/latest/download/github_actions.phar
+          chmod +x github_actions.phar
+      - name: Validate
+        run: ./github_actions.phar codesniffer
+  phpstan:
+    name: PHP Stan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-reqs
+      - name: Run tests
+        run: vendor/bin/phpstan analyse src tests --level max
+  codeowner:
+    needs: [ phpcs, phpstan ]
+    name: Codeowner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate
+        if: github.event.pull_request.user.login == 'FHeerdink'
+        uses: andrewmusgrave/automatic-pull-request-review@0.0.5
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          event: APPROVE
+          body: 'Pull request automatically approved, pull request is done by code owner.'
